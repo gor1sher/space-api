@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -29,9 +30,10 @@ public class WebClientService {
     public ResponseData fetchData() {
         log.info("начало подсчета времени для webClient: {}", startTime);
 
-        var response =  webClient.get()
+        var response = webClient.get()
                 .retrieve()
                 .bodyToMono(Map.class)
+                .timeout(Duration.ofSeconds(5))
                 .block();
 
         if (response == null) {

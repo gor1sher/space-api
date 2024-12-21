@@ -14,7 +14,7 @@ public class HttpClientController {
     private final HttpClientService httpClientService;
 
     @GetMapping
-    public Object returnR(){
+    public Object returnR() {
         return httpClientService.fetchData();
     }
 }

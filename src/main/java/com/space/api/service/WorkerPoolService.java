@@ -24,7 +24,7 @@ public class WorkerPoolService {
     private final WebClientService webClientService;
 
     @SneakyThrows
-    public void poolThread(){
+    public void poolThread() {
         log.info("запускаем клиенты в асинхронном виде");
         ExecutorService executorService = Executors.newFixedThreadPool(3);
 
@@ -35,7 +35,7 @@ public class WorkerPoolService {
         List<Future<ResponseData>> listClients = List.of(futureHttp, futureRestTemplate, futureWebClient);
         List<ResponseData> responseDataList = new ArrayList<>();
 
-        for(Future<ResponseData> data : listClients){
+        for (Future<ResponseData> data : listClients) {
             ResponseData responseData = data.get();
             responseDataList.add(responseData);
             log.info(responseData.getClient() + " время выполнения: {}", responseData.getExecutionTime());

@@ -1,6 +1,5 @@
 package com.space.api.controller;
 
-import com.space.api.service.RestTemplateService;
 import com.space.api.service.WebClientService;
 import com.space.api.service.WorkerPoolService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,7 @@ public class WebClientController {
     private final WebClientService webClientService;
 
     @GetMapping
-    public Object returnR(){
+    public Object returnR() {
         workerPoolService.poolThread();
         return webClientService.fetchData();
     }
