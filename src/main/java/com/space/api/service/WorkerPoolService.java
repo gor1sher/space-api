@@ -32,10 +32,10 @@ public class WorkerPoolService {
         var futureRestTemplate = executorService.submit(() -> restTemplateService.retrieveDataFromApi());
         var futureWebClient = executorService.submit(() -> webClientService.fetchData());
 
-        List<Future<ResponseData>> list = List.of(futureHttp, futureRestTemplate, futureWebClient);
+        List<Future<ResponseData>> listClients = List.of(futureHttp, futureRestTemplate, futureWebClient);
         List<ResponseData> responseDataList = new ArrayList<>();
 
-        for(Future<ResponseData> data : list){
+        for(Future<ResponseData> data : listClients){
             ResponseData responseData = data.get();
             responseDataList.add(responseData);
             log.info(responseData.getClient() + " время выполнения: {}", responseData.getExecutionTime());
