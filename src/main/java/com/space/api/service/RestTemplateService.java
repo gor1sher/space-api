@@ -5,6 +5,7 @@ import com.space.api.model.ResponseData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -15,16 +16,15 @@ import java.util.Objects;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class RestTemplateService {
+@Order(2)
+public class RestTemplateService implements ClientService{
 
     @Value("${api.url}")
     private String url;
     private final RestTemplate restTemplate;
 
-    public ResponseData retrieveDataFromApi() {
-        long startTime = System.currentTimeMillis();
-        log.info("начало подсчета времени для restTemplate: {}", startTime);
-
+    @Override
+    public ResponseData fetchData() {
         log.info("получение ответа о кол-ве людей в космосе");
         var response = restTemplate.getForObject(url, Map.class);
 
@@ -40,9 +40,6 @@ public class RestTemplateService {
             throw new ConditionsNotMetException("полученный ответ от API пуст");
         }
 
-        long endTime = System.currentTimeMillis();
-        log.info("завершение подсчета времени для restTemplate: {}", endTime);
-
-        return new ResponseData("restTemplate", endTime - startTime, astronauts.toString());
+        return new ResponseData("restTemplate", 0L, astronauts.toString());
     }
 }

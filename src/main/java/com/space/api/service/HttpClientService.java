@@ -5,6 +5,7 @@ import com.space.api.exception.ConditionsNotMetException;
 import com.space.api.model.ResponseData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -15,25 +16,20 @@ import java.util.Map;
 
 @Service
 @Slf4j
-public class HttpClientService {
+@Order(1)
+public class HttpClientService implements ClientService{
 
     private String url;
     private final HttpClient client;
-    private final long startTime;
 
     public HttpClientService(@Value("${api.url}") String url) {
-        this.startTime = System.currentTimeMillis();
         this.client = HttpClient.newHttpClient();
         this.url = url;
     }
 
+    @Override
     public ResponseData fetchData() {
-        log.info("начало подсчета времени для httpClient: {}", startTime);
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .GET()
-                .build();
+        HttpRequest request = getHttpRequest();
 
         try {
             var response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -41,13 +37,17 @@ public class HttpClientService {
             ObjectMapper objectMapper = new ObjectMapper();
             var astronauts = objectMapper.readValue(response.body(), Map.class);
 
-
-            long endTime = System.currentTimeMillis();
-
-            log.info("завершение подсчета времени для httpClient: {}", endTime);
-            return new ResponseData("httpClient", endTime - startTime, astronauts.toString());
+            return new ResponseData("httpClient", 0L, astronauts.toString());
         } catch (Exception e) {
-            throw new ConditionsNotMetException(e.getMessage());
+            log.error("Ошибка при выполнении HTTP-запроса: {}", e.getMessage(), e);
+            throw new ConditionsNotMetException("Не удалось выполнить запрос: " + e.getMessage());
         }
+    }
+
+    private HttpRequest getHttpRequest() {
+        return HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .GET()
+                .build();
     }
 }
